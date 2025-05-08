@@ -1,6 +1,6 @@
-"use client"
-import SideBar from "@/app/components/SideBar"
-import { ShoppingCart, DollarSign, Heart, TrendingUp } from "lucide-react"
+"use client";
+import SideBar from "@/app/components/SideBar";
+import { ShoppingCart, DollarSign, Heart, TrendingUp } from "lucide-react";
 
 // Dummy data object
 const dashboardData = {
@@ -49,33 +49,45 @@ const dashboardData = {
       textColor: "text-blue-500",
     },
   ],
-}
+};
 
 export default function Dashboard() {
   return (
-   <SideBar>
-     <div className="p-4 bg-gray-50 min-h-screen">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-3">
-        {dashboardData.metrics.map((metric, index) => (
-          <div key={index} className={`${metric.bgColor} rounded-lg p-4 shadow-sm flex flex-col justify-between h-24`}>
-            <div className="flex justify-between items-start">
-              <div className="flex items-center">
-                {metric.icon}
-                {metric.trend && (
-                  <div className="ml-2 text-green-500 flex items-center">
-                    <TrendingUp className="h-4 w-4 mr-1" />
-                  </div>
-                )}
+    <SideBar>
+      <div className="p-5">
+      <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-3">
+          {dashboardData.metrics.map((metric, index) => (
+            <div
+              key={index}
+              className={`${metric.bgColor} rounded-lg p-4 shadow-sm flex flex-col justify-between h-24`}
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex items-center">
+                  {metric.icon}
+                  {metric.trend && (
+                    <div className="ml-2 text-green-500 flex items-center">
+                      <TrendingUp className="h-4 w-4 mr-1" />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div>
+                <p className={`text-xl font-semibold ${metric.textColor}`}>
+                  {metric.value}
+                </p>
+                <p className="text-gray-500 text-xs">{metric.title}</p>
               </div>
             </div>
-            <div>
-              <p className={`text-xl font-semibold ${metric.textColor}`}>{metric.value}</p>
-              <p className="text-gray-500 text-xs">{metric.title}</p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
-   </SideBar>
-  )
+      <div>
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minima facere
+        dolores quam harum in dolorum fugiat repellendus magni! Explicabo,
+        fugiat?
+      </div>
+      </div>
+    </SideBar>
+  );
 }
