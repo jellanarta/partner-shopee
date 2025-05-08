@@ -1,4 +1,5 @@
 "use client"
+import SideBar from "@/app/components/SideBar"
 import { ShoppingCart, DollarSign, Heart, TrendingUp } from "lucide-react"
 
 // Dummy data object
@@ -52,7 +53,8 @@ const dashboardData = {
 
 export default function Dashboard() {
   return (
-    <div className="p-4 bg-gray-50 min-h-screen">
+   <SideBar>
+     <div className="p-4 bg-gray-50 min-h-screen">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-3">
         {dashboardData.metrics.map((metric, index) => (
           <div key={index} className={`${metric.bgColor} rounded-lg p-4 shadow-sm flex flex-col justify-between h-24`}>
@@ -74,5 +76,6 @@ export default function Dashboard() {
         ))}
       </div>
     </div>
+   </SideBar>
   )
 }
