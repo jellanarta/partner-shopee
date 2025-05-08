@@ -1,6 +1,9 @@
 "use client";
 import SideBar from "@/app/components/SideBar";
 import { ShoppingCart, DollarSign, Heart, TrendingUp } from "lucide-react";
+import { mockData } from "./mock-data";
+import { ProductGrid } from "./product-grid";
+import { ProductFilter } from "./product-filter";
 
 // Dummy data object
 const dashboardData = {
@@ -83,11 +86,12 @@ export default function Dashboard() {
         </div>
       </div>
       <div>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minima facere
-        dolores quam harum in dolorum fugiat repellendus magni! Explicabo,
-        fugiat?
+        {/* <ProductFilter/> */}
+      <ProductGrid data={mockData} />
       </div>
       </div>
     </SideBar>
   );
 }
+
+
