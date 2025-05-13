@@ -17,6 +17,10 @@ export default function PrelineScript() {
     const loadPreline = async () => {
       await import("preline/preline");
       await import("@preline/overlay");
+      await import("@preline/combobox");
+      await import("@preline/tooltip");
+      await import("@floating-ui/dom");
+
     //   await import("@popperjs/core");
       window.HSStaticMethods.autoInit();
     };

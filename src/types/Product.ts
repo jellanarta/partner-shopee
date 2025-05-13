@@ -1,4 +1,21 @@
-export interface Product {
+export type Sales = {
+  total: number;
+  last30Days: number;
+  averagePerDay: number;
+};
+
+export type Orders = {
+  total: number;
+  last30Days: number;
+  averagePerDay: number;
+};
+
+export type Stock = {
+  current: number;
+  initial: number;
+};
+
+export type Product = {
   id: number;
   name: string;
   location: string;
@@ -7,20 +24,9 @@ export interface Product {
   isMall: boolean;
   isOriginal: boolean;
   rating: number;
-  sales: {
-    total: number;
-    last30Days: number;
-    averagePerDay: number;
-  };
-  orders: {
-    total: number;
-    last30Days: number;
-    averagePerDay: number;
-  };
-  stock: {
-    current: number;
-    initial: number;
-  };
+  sales: Sales;
+  orders: Orders;
+  stock: Stock;
   growth: number;
   createdAt: string;
-}
+};

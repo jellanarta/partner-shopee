@@ -19,7 +19,7 @@ export default function SideBar({children}:{children:React.ReactNode}) {
       {/* End Navigation Toggle */}
 
       {/*  */}
-      <div className="ml-64">
+      <div className="ml-0 lg:ml-64">
       {children}
       </div>
       {/*  */}
