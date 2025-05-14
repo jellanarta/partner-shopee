@@ -1,6 +1,6 @@
-import { formatCurrency } from "@/app/lib/utils/formatCurrency"
-import { formatNumber } from "@/app/lib/utils/formatNumber"
 import { Product } from "@/types/Product"
+import { formatCurrency } from "@/utils/formatCurrency"
+import { formatNumber } from "@/utils/formatNumber"
 import { Star, TrendingUp, ShoppingBag, MapPin, CheckCircle, AlertCircle } from "lucide-react"
 
 interface ProductCardProps {

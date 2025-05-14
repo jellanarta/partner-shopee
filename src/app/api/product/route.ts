@@ -47,14 +47,18 @@ export async function GET(req: NextRequest) {
     const totalPages = Math.ceil(filteredProducts.length / limit);
     const hasNextPage = endIndex < filteredProducts.length;
 
-    console.log(productsToReturn)
+    // const data = [1,11,22,23,23,333]
+
+
+    const returnData = {
+      products: productsToReturn,
+      next: hasNextPage ? `/api/product?name=${query}&page=${page + 1}&limit=${limit}` : null,
+      totalPages,
+      currentPage: page,
+    }
+    console.log(returnData)
     return new Response(
-      JSON.stringify({
-        products: productsToReturn,
-        next: hasNextPage ? `/api/product?name=${query}&page=${page + 1}&limit=${limit}` : null,
-        totalPages,
-        currentPage: page,
-      }),
+      JSON.stringify(returnData),
       {
         status: 200,
         headers: { "Content-Type": "application/json" },

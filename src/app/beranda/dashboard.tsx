@@ -4,58 +4,14 @@ import { DollarSign, Heart, ShoppingCart, TrendingUp } from "lucide-react";
 import { ResultProductState } from ".";
 import { ProductCard } from "../dashboard/components/product-card";
 import { useEffect, useState } from "react";
+import Navigation from "./navigation";
 import {
   DashboardSummary,
   generateDashboardSummary,
-} from "../lib/utils/generateDashboardSummary";
+} from "@/utils/generateDashboardSummary";
+import { getProduct } from "@/services/product";
+import { MoonLoader } from "react-spinners";
 
-// const dashboardData = {
-//   metrics: [
-//     {
-//       title: "Total Item",
-//       value: "21",
-//       icon: <ShoppingCart className="h-5 w-5 text-blue-500" />,
-//       bgColor: "bg-blue-50",
-//       textColor: "text-blue-500",
-//     },
-//     {
-//       title: "Total Penjualan",
-//       value: "256.387",
-//       icon: <ShoppingCart className="h-5 w-5 text-purple-500" />,
-//       bgColor: "bg-purple-50",
-//       textColor: "text-purple-500",
-//     },
-//     {
-//       title: "Total Pendapatan",
-//       value: "Rp 21.980.091.036",
-//       icon: <DollarSign className="h-5 w-5 text-yellow-500" />,
-//       bgColor: "bg-yellow-50",
-//       textColor: "text-yellow-500",
-//     },
-//     {
-//       title: "Rata-rata Omset/Bulan",
-//       value: "Rp 1.224.372.235",
-//       icon: <DollarSign className="h-5 w-5 text-red-500" />,
-//       bgColor: "bg-red-50",
-//       textColor: "text-red-500",
-//     },
-//     {
-//       title: "Pendapatan 30 hari",
-//       value: "Rp 1.289.427.403",
-//       icon: <DollarSign className="h-5 w-5 text-green-500" />,
-//       bgColor: "bg-green-50",
-//       textColor: "text-green-500",
-//     },
-//     {
-//       title: "Tren",
-//       value: "5.31%",
-//       icon: <Heart className="h-5 w-5 text-red-400" />,
-//       trend: "up",
-//       bgColor: "bg-blue-50",
-//       textColor: "text-blue-500",
-//     },
-//   ],
-// };
 export default function Dashboard({
   resultProduct,
   children,
@@ -72,7 +28,7 @@ export default function Dashboard({
     {
       id: "total-item", // id unik
       title: "Total Item",
-      value: "21",
+      value: "0",
       icon: <ShoppingCart className="h-5 w-5 text-blue-500" />,
       bgColor: "bg-blue-50",
       textColor: "text-blue-500",
@@ -80,7 +36,7 @@ export default function Dashboard({
     {
       id: "total-penjualan", // id unik
       title: "Total Penjualan",
-      value: "256.387",
+      value: "0",
       icon: <ShoppingCart className="h-5 w-5 text-purple-500" />,
       bgColor: "bg-purple-50",
       textColor: "text-purple-500",
@@ -88,7 +44,7 @@ export default function Dashboard({
     {
       id: "total-pendapatan", // id unik
       title: "Total Pendapatan",
-      value: "Rp 21.980.091.036",
+      value: "Rp 0",
       icon: <DollarSign className="h-5 w-5 text-yellow-500" />,
       bgColor: "bg-yellow-50",
       textColor: "text-yellow-500",
@@ -96,7 +52,7 @@ export default function Dashboard({
     {
       id: "rata-rata-omset", // id unik
       title: "Rata-rata Omset/Bulan",
-      value: "Rp 1.224.372.235",
+      value: "Rp 0",
       icon: <DollarSign className="h-5 w-5 text-red-500" />,
       bgColor: "bg-red-50",
       textColor: "text-red-500",
@@ -104,7 +60,7 @@ export default function Dashboard({
     {
       id: "pendapatan-30-hari", // id unik
       title: "Pendapatan 30 hari",
-      value: "Rp 1.289.427.403",
+      value: "Rp 0",
       icon: <DollarSign className="h-5 w-5 text-green-500" />,
       bgColor: "bg-green-50",
       textColor: "text-green-500",
@@ -112,7 +68,7 @@ export default function Dashboard({
     {
       id: "tren", // id unik
       title: "Tren",
-      value: "5.31%",
+      value: "0%",
       icon: <Heart className="h-5 w-5 text-red-400" />,
       trend: "up",
       bgColor: "bg-blue-50",
@@ -144,6 +100,50 @@ export default function Dashboard({
       })
     );
   }, [dataProduct]);
+
+  const handleNavigations = async (value: string) => {
+    if (value === "next") {
+      if (dataProduct.data.currentPage !== dataProduct.data.totalPages) {
+        setDataProduct((prev) => ({
+          ...prev,
+          loading: true,
+        }));
+        const result = await getProduct("", dataProduct.data.next);
+        if (result.status === 200) {
+          const data = result.data;
+          setDataProduct((prev) => ({
+            loading: false,
+            data: {
+              currentPage: data.currentPage,
+              next: data.next,
+              products: prev.data.products.concat(data.products), // Menambahkan produk baru ke produk yang sudah ada
+              totalPages: data.totalPages,
+            },
+          }));
+        }
+      }
+    } else if (value === "prev") {
+      if (dataProduct.data.currentPage !== 1) {
+        setDataProduct((prev) => ({
+          ...prev,
+          loading: true,
+        }));
+        const nextURL = dataProduct.data.next?.replace(/page=\d+/, `page=2`);
+        setDataProduct((prev) => ({
+          loading: false,
+          data: {
+            currentPage: prev.data.currentPage - 1,
+            next: `${nextURL}`,
+            products: prev.data.products.slice(
+              0,
+              prev.data.products.length - 12
+            ), // Menghapus 12 produk terakhir
+            totalPages: prev.data.totalPages,
+          },
+        }));
+      }
+    }
+  };
   return (
     <div className="p-5">
       {children}
@@ -173,12 +173,30 @@ export default function Dashboard({
         ))}
       </div>
 
-      <div className="mt-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-4">
-          {dataProduct.data.products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+      <div className="my-7 flex justify-between items-center">
+        <div className="text-sm ring-1 ring-gray-200 p-2 rounded-sm">
+          filter
         </div>
+        <div>
+          <Navigation
+            handleNavigations={handleNavigations}
+            dataProduct={dataProduct}
+          />
+        </div>
+      </div>
+
+      <div>
+        {dataProduct.loading ? (
+          <div className="flex justify-center mt-5">
+            <MoonLoader color="blue" size={50}/>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-4">
+            {dataProduct.data.products.slice(-12).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

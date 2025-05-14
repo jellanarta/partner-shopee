@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { getProduct } from "../services/product";
 import { ScaleLoader } from "react-spinners";
 import { Product } from "@/types/Product";
 import Dashboard from "./dashboard";
+import { getProduct } from "@/services/product";
 
 interface ProductPaginationResult {
   currentPage: number;
@@ -41,7 +41,7 @@ export default function Beranda() {
       loading: true,
     }));
     try {
-      const resultApi = await getProduct(keyName);
+      const resultApi = await getProduct(keyName,null);
 
       if (resultApi.status === 200) {
         console.log(resultApi.data); // Handle product data here
