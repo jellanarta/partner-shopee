@@ -1,0 +1,63 @@
+import Head from 'next/head';
+import Link from 'next/link';
+
+export default function Login() {
+  return (
+    <>
+      <Head>
+        <title>Login</title>
+        <meta name="description" content="Halaman Login" />
+      </Head>
+
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+          <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
+          <form>
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+
+            <div className="mb-6">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Login
+            </button>
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-600">
+                Belum punya akun?{' '}
+                <Link href="/register" className="text-blue-600 hover:text-blue-800">
+                  Daftar
+                </Link>
+              </p>
+
+            </div>
+            <div className="mt-4 text-center">
+              <Link href="/forgot-password" className="text-blue-600 hover:text-blue-800 text-sm">
+                Lupa Password?
+              </Link>
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
+  );
+}

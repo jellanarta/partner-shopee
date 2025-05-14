@@ -168,6 +168,7 @@ export function ProductGrid({ data }: ProductGridProps) {
             Clear Filters
           </button>
         </div>
+
       )}
     </div>
   );

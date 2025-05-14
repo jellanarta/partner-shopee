@@ -89,6 +89,7 @@ export default function Dashboard() {
         {/* <ProductFilter/> */}
       <ProductGrid data={mockData} />
       </div>
+      
       </div>
     </SideBar>
   );
