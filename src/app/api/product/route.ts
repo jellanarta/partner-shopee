@@ -47,6 +47,7 @@ export async function GET(req: NextRequest) {
     const totalPages = Math.ceil(filteredProducts.length / limit);
     const hasNextPage = endIndex < filteredProducts.length;
 
+    console.log(productsToReturn)
     return new Response(
       JSON.stringify({
         products: productsToReturn,
