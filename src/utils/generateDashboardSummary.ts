@@ -27,7 +27,11 @@ export function generateDashboardSummary(
     (sum, p) => sum + p.sales.last30Days,
     0
   );
-  const avgMonthlyRevenue = revenueLast30Days / (totalItem || 1);
+
+  const totalSalesLast30Days = products.reduce((total, product) => {
+    return total + product.sales.last30Days;
+  }, 0);
+  const avgMonthlyRevenue = totalSalesLast30Days / (totalItem || 1);
   const avgGrowth =
     products.reduce((sum, p) => sum + p.growth, 0) / (totalItem || 1);
   return {

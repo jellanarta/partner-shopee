@@ -11,6 +11,9 @@ import {
 } from "@/utils/generateDashboardSummary";
 import { getProduct } from "@/services/product";
 import { MoonLoader } from "react-spinners";
+import ProductDetail from "./productDetail";
+import { SortOption } from "@/types/SortOption";
+import TableProductDetails from "./tableProductDetails";
 
 export default function Dashboard({
   resultProduct,
@@ -21,8 +24,12 @@ export default function Dashboard({
 }) {
   const [dataProduct, setDataProduct] =
     useState<ResultProductState>(resultProduct);
+  const [urlFilterData, setUrlFilterData] = useState<string | null>("");
   useEffect(() => {
     setDataProduct(resultProduct);
+    if (resultProduct.data.next) {
+      setUrlFilterData(resultProduct.data.next.replace(/page=\d+/, `page=1`));
+    }
   }, []);
   const [dashboardData, setDashboardData] = useState([
     {
@@ -144,59 +151,215 @@ export default function Dashboard({
       }
     }
   };
+
+  // handle filter products
+  const [checkedFilter, setCheckedFilter] = useState({
+    default: true,
+    murah: false,
+    mahal: false,
+    populer: false,
+    laris: false,
+  });
+
+  const [searchFilter, setSearchFilter] = useState(false);
+  const changeCheckedFilter = (keyName: SortOption) => {
+    setCheckedFilter((prev) => {
+      const isAlreadyChecked = prev[keyName];
+      if (isAlreadyChecked) {
+        // Jika filter yang diklik sudah aktif → reset ke default
+        return {
+          default: true,
+          murah: false,
+          mahal: false,
+          populer: false,
+          laris: false,
+        };
+      }
+
+      // Jika filter yang diklik belum aktif → aktifkan dia, lainnya false
+      return {
+        default: keyName === "default",
+        murah: keyName === "murah",
+        mahal: keyName === "mahal",
+        populer: keyName === "populer",
+        laris: keyName === "laris",
+      };
+    });
+    setSearchFilter(true);
+    if (urlFilterData) {
+      setUrlFilterData(urlFilterData.replace(/page=\d+/, `page=1`));
+    }
+  };
+  useEffect(() => {
+    const getWithFilter = async () => {
+      if (searchFilter) {
+        setDataProduct((prev) => ({
+          ...prev,
+          loading: true,
+        }));
+        let filterdata = "";
+        Object.entries(checkedFilter).map(([key, value]) => {
+          if (value) {
+            filterdata += `filter=${key}`;
+          }
+        });
+        const result = await getProduct("", urlFilterData + "&" + filterdata);
+        if (result.status === 200) {
+          // Handle product data here
+          setDataProduct((prev) => ({
+            ...prev,
+            loading: false,
+            data: result.data,
+          }));
+        } else {
+          setDataProduct((prev) => ({
+            ...prev,
+            loading: false,
+          }));
+        }
+      }
+    };
+    getWithFilter();
+  }, [checkedFilter]);
+  // handle detail product
+  const [openDetailProducts, setOpenDetailProducts] = useState(false);
+  const handleDetailsProducts = (isOpen: boolean) => {
+    setOpenDetailProducts(isOpen);
+  };
+
   return (
-    <div className="p-5">
+    <div>
       {children}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-3">
-        {dashboardData.map((metric, index) => (
-          <div
-            key={index}
-            className={`${metric.bgColor} rounded-lg p-4 shadow-sm flex flex-col justify-between h-24`}
-          >
-            <div className="flex justify-between items-start">
-              <div className="flex items-center">
-                {metric.icon}
-                {metric.trend && (
-                  <div className="ml-2 text-green-500 flex items-center">
-                    <TrendingUp className="h-4 w-4 mr-1" />
-                  </div>
-                )}
+      <div className="px-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-3">
+          {dashboardData.map((metric, index) => (
+            <div
+              key={index}
+              className={`${metric.bgColor} rounded-lg p-4 shadow-sm flex flex-col justify-between h-24`}
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex items-center">
+                  {metric.icon}
+                  {metric.trend && (
+                    <div className="ml-2 text-green-500 flex items-center">
+                      <TrendingUp className="h-4 w-4 mr-1" />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div>
+                <p className={`text-xl font-semibold ${metric.textColor}`}>
+                  {metric.value}
+                </p>
+                <p className="text-gray-500 text-xs">{metric.title}</p>
               </div>
             </div>
-            <div>
-              <p className={`text-xl font-semibold ${metric.textColor}`}>
-                {metric.value}
-              </p>
-              <p className="text-gray-500 text-xs">{metric.title}</p>
+          ))}
+        </div>
+
+        {openDetailProducts ? null : (
+          <>
+            <div className="mt-10">
+              <div className="flex flex-wrap justify-center sm:justify-start  gap-2">
+                {Object.values(SortOption).map((data: SortOption, index) => (
+                  <label
+                    key={index}
+                    htmlFor={`hs-checkbox-in-form-${index + data}`}
+                    className="flex p-3  bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checkedFilter[data]}
+                      onChange={() => changeCheckedFilter(data)}
+                      className="shrink-0 mt-0.5 border-gray-200 rounded-sm text-blue-600 focus:ring-blue-500 checked:border-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+                      id={`hs-checkbox-in-form-${index + data}`}
+                    />
+                    <span className="text-sm text-gray-500 ms-3 pr-5 capitalize">
+                      {data}
+                    </span>
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="my-7 flex justify-between items-center">
-        <div className="text-sm ring-1 ring-gray-200 p-2 rounded-sm">
-          filter
-        </div>
-        <div>
-          <Navigation
-            handleNavigations={handleNavigations}
-            dataProduct={dataProduct}
-          />
-        </div>
-      </div>
-
-      <div>
-        {dataProduct.loading ? (
-          <div className="flex justify-center mt-5">
-            <MoonLoader color="blue" size={50}/>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-4">
-            {dataProduct.data.products.slice(-12).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+            <div className="my-7 grid gap-7 sm:flex justify-center sm:justify-between flex-wrap items-center">
+              <div>
+                <button
+                  onClick={() => handleDetailsProducts(true)}
+                  type="button"
+                  className="py-3 cursor-pointer px-4 inline-flex items-center gap-x-2 text-sm  rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+                >
+                  Show full data
+                  <svg
+                    className="shrink-0 size-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12h14"></path>
+                    <path d="m12 5 7 7-7 7"></path>
+                  </svg>
+                </button>
+              </div>
+              <div className="mt-0 ">
+                <Navigation
+                  handleNavigations={handleNavigations}
+                  dataProduct={dataProduct}
+                />
+              </div>
+            </div>
+          </>
         )}
+
+        <div>
+          {dataProduct.loading ? (
+            <div className="flex justify-center mt-5 mb-10">
+              <MoonLoader color="blue" size={50} />
+            </div>
+          ) : openDetailProducts ? (
+            <div>
+              <div className="text-sm mt-7">
+                <div>
+                  <button
+                    onClick={() => setOpenDetailProducts(false)}
+                    type="button"
+                    className="py-3 cursor-pointer px-4 inline-flex items-center gap-x-2 text-sm  rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+                  >
+                    <svg
+                      className="shrink-0 size-4 rotate-180"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 12h14"></path>
+                      <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                    Back to search results
+                  </button>
+                </div>
+              </div>
+
+              <TableProductDetails products={dataProduct.data.products} />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 mb-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-4">
+              {dataProduct.data.products.slice(-12).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
