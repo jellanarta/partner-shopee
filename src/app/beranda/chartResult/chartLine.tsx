@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Product } from "@/types/Product";
 import { ApexOptions } from "apexcharts";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -62,6 +63,11 @@ export default function ChartLine({
       },
       yaxis: [
         {
+          labels:{
+            formatter: function (value) {
+              return formatCurrency(value);
+            }
+          },
           title: {
             text: name,
           },
