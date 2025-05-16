@@ -1,14 +1,11 @@
-import { initDb } from "@/utils/user/db";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function GET(){
     try {
-        await initDb()
-        return NextResponse.json({ success: true, message: "Database initialized successfully" })
-      } catch (error) {
-        console.error("Error initializing database:", error)
-        return NextResponse.json({ success: false, message: "Failed to initialize database" }, { status: 500 })
-      }
+        
+    } catch (error) {
+        
+    }
 }
 export async function POST(request:NextRequest){
     try {
