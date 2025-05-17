@@ -1,15 +1,20 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { query, hashPassword, verifyPassword } from "./db"
 import { redirect } from "next/navigation"
+import bcrypt from "bcryptjs"
+import prisma from "@/lib/prisma"
+import { sendEmail } from "./mailer"
+
+const jwt = require("jsonwebtoken");
 
 // Fungsi untuk login
 export async function loginUser(email: string, password: string) {
   try {
     // Cari user berdasarkan email
-    const result = await query("SELECT * FROM users WHERE email = $1", [email])
-    const user = result.rows[0]
+    const user = await prisma.user.findUnique({
+      where: { email },
+    })
 
     // Jika user tidak ditemukan
     if (!user) {
@@ -17,12 +22,25 @@ export async function loginUser(email: string, password: string) {
     }
 
     // Verifikasi password
-    const isPasswordValid = await verifyPassword(password, user.password)
+    const isPasswordValid = await bcrypt.compare(password, user.password)
     if (!isPasswordValid) {
       return { success: false, message: "Email atau password salah" }
     }
 
-    // Set cookie untuk session (dalam aplikasi nyata, gunakan JWT atau session yang lebih aman)
+    // Generate token untuk session (dalam aplikasi nyata, gunakan JWT yang lebih aman)
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET || "default_secret",
+      { expiresIn: "1d" }
+    );
+
+    // Update token di database
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { token },
+    })
+
+    // Set cookie untuk session
     const oneDay = 24 * 60 * 60 * 1000
     ;(await cookies()).set(
       "user_session",
@@ -30,6 +48,8 @@ export async function loginUser(email: string, password: string) {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
+        token,
       }),
       {
         expires: Date.now() + oneDay,
@@ -46,6 +66,7 @@ export async function loginUser(email: string, password: string) {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
       },
     }
   } catch (error) {
@@ -67,21 +88,25 @@ export async function registerUser(name: string, email: string, password: string
     }
 
     // Cek apakah email sudah terdaftar
-    const checkEmail = await query("SELECT * FROM users WHERE email = $1", [email])
-    if (checkEmail.rows.length > 0) {
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    })
+
+    if (existingUser) {
       return { success: false, message: "Email sudah terdaftar" }
     }
 
-    // Hash password
-    const hashedPassword = await hashPassword(password)
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     // Simpan user baru ke database
-    const result = await query(
-      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email",
-      [name, email, hashedPassword],
-    )
-
-    const newUser = result.rows[0]
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: "USER",
+      },
+    })
 
     return {
       success: true,
@@ -89,6 +114,7 @@ export async function registerUser(name: string, email: string, password: string
         id: newUser.id,
         name: newUser.name,
         email: newUser.email,
+        role: newUser.role,
       },
     }
   } catch (error) {
@@ -97,41 +123,61 @@ export async function registerUser(name: string, email: string, password: string
   }
 }
 
-// Fungsi untuk reset password
 export async function requestPasswordReset(email: string) {
-  try {
-    // Cek apakah email terdaftar
-    const result = await query("SELECT * FROM users WHERE email = $1", [email])
-    if (result.rows.length === 0) {
-      // Untuk keamanan, jangan beritahu user bahwa email tidak terdaftar
-      return { success: true, message: "Jika email terdaftar, link reset password akan dikirim" }
+    try {
+        const user = await prisma.user.findUnique({
+            where: { email },
+        })
+
+        if (!user) {
+            return { success: true, message: "Jika email terdaftar, link reset password akan dikirim" }
+        }
+
+        const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { token: resetToken },
+        })
+
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
+        await sendEmail({
+          to: email,
+          subject: "Reset Password Request",
+          html: `<p>Click the link below to reset your password:</p><a href="${resetLink}">${resetLink}</a>`,
+        })
+
+        return {
+            success: true,
+            message: "Link reset password telah dikirim ke email Anda",
+        }
+    } catch (error) {
+        console.error("Password reset request error:", error)
+        return { success: false, message: "Terjadi kesalahan saat memproses permintaan" }
     }
-
-    const crypto = await import("crypto")
-    const resetToken = crypto.randomBytes(32).toString("hex")
-
-    const resetTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-
-await sendResetEmail(email, resetToken);
-
-return { success: true, message: "Link reset password telah dikirim ke email Anda" }
-
-
-    return {
-      success: true,
-      message: "Link reset password telah dikirim ke email Anda",
-    }
-  } catch (error) {
-    console.error("Password reset request error:", error)
-    return { success: false, message: "Terjadi kesalahan saat memproses permintaan" }
-  }
 }
 
 export async function logoutUser() {
-  (await cookies()).delete("user_session")
-  redirect("Login")
-}
+  const session = (await cookies()).get("user_session")
 
+  if (session && session.value) {
+    try {
+      const userData = JSON.parse(session.value)
+
+      if (userData.id) {
+        await prisma.user.update({
+          where: { id: userData.id },
+          data: { token: null },
+        })
+      }
+    } catch (error) {
+      console.error("Error during logout:", error)
+    }
+  }
+
+  (await cookies()).delete("user_session")
+  redirect("/Login")
+}
 
 export async function getCurrentUser() {
   const session = (await cookies()).get("user_session")
@@ -141,45 +187,52 @@ export async function getCurrentUser() {
   }
 
   try {
-    return JSON.parse(session.value)
+    const userData = JSON.parse(session.value)
+
+    // Verifikasi token di database
+    const user = await prisma.user.findUnique({
+      where: { id: userData.id },
+    })
+
+    if (!user || user.token !== userData.token) {
+      // Token tidak valid atau tidak cocok
+      return null
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    }
   } catch (error) {
+    console.error("Error getting current user:", error)
     return null
   }
 }
 
-
+// Middleware untuk memeriksa apakah user sudah login
 export async function requireAuth() {
-    const user = await getCurrentUser();
+  const user = await getCurrentUser()
 
-    if (!user) {
-        redirect("/Login");
-    }
+  if (!user) {
+    redirect("/Login")
+  }
 
-    return user;
+  return user
 }
 
-async function sendResetEmail(email: string, resetToken: string) {
-    const resetUrl = `${process.env.APP_URL}/reset-password?token=${resetToken}`;
+// Middleware untuk memeriksa apakah user adalah admin
+// export async function requireAdmin() {
+//   const user = await getCurrentUser()
 
-    const emailContent = `
-        <p>Hi,</p>
-        <p>You requested a password reset. Click the link below to reset your password:</p>
-        <a href="${resetUrl}">${resetUrl}</a>
-        <p>If you did not request this, please ignore this email.</p>
-    `;
+//   if (!user) {
+//     redirect("/Login")
+//   }
 
-    try {
-        // Assuming you have a mailer utility or service
-        const mailer = await import("./mailer");
-        await mailer.sendEmail({
-            to: email,
-            subject: "Password Reset Request",
-            html: emailContent,
-        });
-    } catch (error) {
-        console.error("Failed to send reset email:", error);
-        throw new Error("Failed to send reset email");
-    }
-}
-// Removed duplicate function implementation
+//   if (user.role !== "ADMIN") {
+//     redirect("/dashboard") // Redirect ke dashboard jika bukan admin
+//   }
 
+//   return user
+// }
