@@ -6,12 +6,58 @@ import {
 import { Product } from "@/types/Product";
 import { SortFilter } from "@/types/SortOption";
 import { sortProducts } from "@/utils/sortProducts";
+import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
-
+import jwt from "jsonwebtoken";
+import config from "@/config/config";
+import { verifikasiToken } from "@/utils/token";
+import prisma from "@/lib/prisma";
 export async function GET(req: NextRequest) {
   try {
     const params = req.nextUrl.searchParams;
 
+    // validasi user login
+    const cookieStore = await cookies();
+    const tokensp = cookieStore.get("token");
+
+    if (!tokensp) {
+      return new Response(
+        JSON.stringify({ message: "can't not access here" }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+    const valuecookie = tokensp.value;
+    const validasitoken: any = await verifikasiToken(valuecookie);
+    if (validasitoken.error) {
+      return new Response(
+        JSON.stringify({ message: "can't not access here" }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+    const idUsers = validasitoken.data.id;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: idUsers,
+        token: valuecookie,
+      },
+    });
+    if (!user) {
+      return new Response(
+        JSON.stringify({ message: "can't not access here" }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // const header = req.cookies()
     // Get 'name', 'page', and 'limit' from query parameters
     const query: string | null = params.get("name");
     const queryCategorie: string | null = params.get("category");
