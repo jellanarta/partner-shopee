@@ -1,5 +1,5 @@
 
-import { typeLogin } from "@/app/Login/components/loginBar";
+import { typeLogin } from "@/app/api/admin/components/loginBar";
 import { z } from "zod";
 
 
