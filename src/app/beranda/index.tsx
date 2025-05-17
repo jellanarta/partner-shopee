@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ScaleLoader } from "react-spinners";
+import { BeatLoader, ScaleLoader } from "react-spinners";
 import { Product } from "@/types/Product";
 import Dashboard from "./dashboard";
 import { getProduct } from "@/services/product";
@@ -102,7 +102,7 @@ export default function Beranda() {
   // handle click rekomendasi
   const [loadingSeacrhCategories, setLoadingSeacrhCategories] = useState(false);
   const [textCategories, setTextCategories] = useState("");
-  const [showFilter, setShowFilter] = useState(true)
+  const [showFilter, setShowFilter] = useState(true);
   const clickCategories = async (dataFilter: LabelFilterProduk) => {
     if (!loadingSeacrhCategories) {
       setLoadingSeacrhCategories(true);
@@ -117,7 +117,7 @@ export default function Beranda() {
           loading: false,
           data: resultApi.data,
         }));
-        setShowFilter(false)
+        setShowFilter(false);
       } else if (resultApi.status === 400) {
         setResultProduct((prev) => ({
           ...prev,
@@ -321,6 +321,11 @@ export default function Beranda() {
                         {data}
                       </button>
                     ))}
+                    {loadingSeacrhCategories ? (
+                      <div className="mt-5 flex justify-center">
+                        <BeatLoader size={14} color="blue" />
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
