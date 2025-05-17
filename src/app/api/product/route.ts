@@ -1,4 +1,8 @@
 import dataDummyProducts from "@/types/dataDumyProduct";
+import {
+  daftarLabelFilter,
+  LabelFilterProduk,
+} from "@/types/LabelFilterProduk";
 import { Product } from "@/types/Product";
 import { SortFilter } from "@/types/SortOption";
 import { sortProducts } from "@/utils/sortProducts";
@@ -10,6 +14,8 @@ export async function GET(req: NextRequest) {
 
     // Get 'name', 'page', and 'limit' from query parameters
     const query: string | null = params.get("name");
+    const queryCategorie: string | null = params.get("category");
+
     const filterParam: string | null = params.get("filter");
 
     // Validasi filter yang diterima
@@ -34,24 +40,63 @@ export async function GET(req: NextRequest) {
 
     // console.log(`Searching for products with name: ${query}, Page: ${page}, Limit: ${limit}`);
 
-    if (!query || query.trim().length === 0) {
-      return new Response(
-        JSON.stringify({ message: "Please provide a product name keyword." }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
+    if (!query || !query.trim().length) {
+      if (!queryCategorie || !queryCategorie.trim().length) {
+        return new Response(
+          JSON.stringify({ message: "Please provide a product name keyword." }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      } else {
+        if (
+          !(daftarLabelFilter as readonly string[]).includes(queryCategorie)
+        ) {
+          return new Response(
+            JSON.stringify({
+              message: "Please provide a product name keyword.",
+            }),
+            {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         }
-      );
+      }
     }
 
-    const keywordLower = query.toLowerCase();
+    const dataproducts: { products: Product[] } = {
+      products: [],
+    };
 
-    const filteredProducts = dataDummyProducts.filter((product) =>
-      product.name.toLowerCase().includes(keywordLower)
-    );
+    if (query) {
+      const keywordLower = query?.toLowerCase();
+      dataproducts.products = dataDummyProducts.filter((product) =>
+        product.name.toLowerCase().includes(keywordLower ? keywordLower : "")
+      );
+    } else if (queryCategorie) {
+      const category = queryCategorie as LabelFilterProduk;
+      if (category === "Populer") {
+        dataproducts.products = sortProducts(dataDummyProducts, "populer");
+      } else if (category === "Terbaru") {
+        dataproducts.products = sortProducts(dataDummyProducts, "terbaru");
+      } else if (category === "Terlaris") {
+        dataproducts.products = sortProducts(dataDummyProducts, "laris");
+      } else if (category === "Stok Terbanyak") {
+        dataproducts.products = sortProducts(
+          dataDummyProducts,
+          "stok_terbanyak"
+        );
+      } else if (category === "Produk Mall") {
+        dataproducts.products = sortProducts(dataDummyProducts, "produk_mall");
+      } else {
+        dataproducts.products = [];
+      }
+    }
 
     // ❗️ Check if no products found
-    if (filteredProducts.length === 0) {
+    if (dataproducts.products.length === 0) {
       return new Response(
         JSON.stringify({
           message: "No products found matching the given keyword.",
@@ -65,27 +110,44 @@ export async function GET(req: NextRequest) {
     const filteredProductsFilter: { products: Product[] } = {
       products: [],
     };
-    let withFilter = ""
+    let withFilter = "";
     if (filter !== "default") {
-      filteredProductsFilter.products = sortProducts(filteredProducts, filter);
-      withFilter+=`&filter=${filter}`
-    }else{
-      filteredProductsFilter.products = filteredProducts
+      filteredProductsFilter.products = sortProducts(
+        dataproducts.products,
+        filter
+      );
+      withFilter += `&filter=${filter}`;
+    } else {
+      filteredProductsFilter.products = dataproducts.products;
     }
+
     // Pagination
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
-    const productsToReturn = filteredProductsFilter.products.slice(startIndex, endIndex);
-    const totalPages = Math.ceil(filteredProductsFilter.products.length / limit);
+    const productsToReturn = filteredProductsFilter.products.slice(
+      startIndex,
+      endIndex
+    );
+    const totalPages = Math.ceil(
+      filteredProductsFilter.products.length / limit
+    );
     const hasNextPage = endIndex < filteredProductsFilter.products.length;
 
+    let nextUrl = `/api/product?name=${query}&page=${
+      page + 1
+    }&limit=${limit}${withFilter}`;
 
+    if (
+      (daftarLabelFilter as readonly string[]).includes(
+        queryCategorie ? queryCategorie : ""
+      )
+    ) {
+      nextUrl = nextUrl.replace(/(\?name=null)/, "?category=" + queryCategorie);
+    }
     const returnData = {
       products: productsToReturn,
-      next: hasNextPage
-        ? `/api/product?name=${query}&page=${page + 1}&limit=${limit}${withFilter}`
-        : null,
+      next: hasNextPage ? nextUrl : null,
       totalPages,
       currentPage: page,
     };
