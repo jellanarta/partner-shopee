@@ -11,16 +11,17 @@ import {
 } from "@/utils/generateDashboardSummary";
 import { getProduct } from "@/services/product";
 import { MoonLoader } from "react-spinners";
-import ProductDetail from "./productDetail";
 import { SortOption } from "@/types/SortOption";
 import TableProductDetails from "./tableProductDetails";
 
 export default function Dashboard({
   resultProduct,
   children,
+  showFilter
 }: {
   children: React.ReactNode;
   resultProduct: ResultProductState;
+  showFilter:boolean
 }) {
   const [dataProduct, setDataProduct] =
     useState<ResultProductState>(resultProduct);
