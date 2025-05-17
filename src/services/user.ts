@@ -1,5 +1,5 @@
 
-import { typeLogin } from "@/app/api/admin/components/loginBar";
+import { typeLogin } from "@/app/login/components/loginBar";
 import { typeRegister } from "@/app/register/components/registerBar";
 import axios from "axios";
 
