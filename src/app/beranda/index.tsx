@@ -11,6 +11,7 @@ import {
   daftarLabelFilter,
   LabelFilterProduk,
 } from "@/types/LabelFilterProduk";
+import Link from "next/link";
 
 interface ProductPaginationResult {
   currentPage: number;
@@ -40,6 +41,7 @@ export default function Beranda() {
     const value = e.target.value;
     setKeyName(value);
   };
+  const [isLogin, setIsLogin] = useState(true);
   const submitSearchProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setResultProduct((prev) => ({
@@ -66,6 +68,13 @@ export default function Beranda() {
             "Please provide a valid search keyword."
         );
         setTimeout(() => setShowAlert(false), 5000);
+      } else if (resultApi.status === 401) {
+        setKeyName("")
+        setResultProduct((prev) => ({
+          ...prev,
+          loading: false,
+        }));
+        setIsLogin(false);
       } else {
         setResultProduct((prev) => ({
           ...prev,
@@ -253,6 +262,38 @@ export default function Beranda() {
                         <ScaleLoader color="blue" />
                       </div>
                     ) : null}
+
+                    {isLogin ? null : (
+                      <div className="mt-5 ">
+                        <Link
+                        href={'/register'}
+                          className="py-3 mr-2 cursor-pointer px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-hidden focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                        >
+                          Register
+                        </Link>
+                        <Link
+                        href={'/login'}
+                          className="py-3 px-4 cursor-pointer inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+                        >
+                          Login
+                          <svg
+                            className="shrink-0 size-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M5 12h14"></path>
+                            <path d="m12 5 7 7-7 7"></path>
+                          </svg>
+                        </Link>
+                      </div>
+                    )}
 
                     {/* SVG Element */}
                     <div className="hidden md:block absolute top-0 end-0 -translate-y-12 translate-x-20">
