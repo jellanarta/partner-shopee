@@ -1,11 +1,11 @@
 "use client"
 import { UserService } from '@/services/user';
-import { Router } from 'lucide-react';
 import Head from 'next/head';
 import Link from 'next/link';
 
 
 export type typePorgotPassword = {email:string,action?:string}
+
 export default function ForgotPassword() {
   const handlesubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
