@@ -1,7 +1,23 @@
+"use client"
+import { UserService } from '@/services/user';
+import { Router } from 'lucide-react';
 import Head from 'next/head';
 import Link from 'next/link';
 
+
+export type typePorgotPassword = {email:string,action?:string}
 export default function ForgotPassword() {
+  const handlesubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const response = await UserService.checkEmail({email}) as { status: number };
+    if (response.status === 200) {
+      console.log("Lupa password berhasil");
+    } else {
+      console.log("Lupa password gagal");
+    }
+  }
   return (
     <>
       <Head>
@@ -17,7 +33,8 @@ export default function ForgotPassword() {
           </p>
 
           {/* Formulir Lupa Password */}
-          <form>
+          <form
+            onSubmit={handlesubmit}>
             {/* Input Email */}
             <div className="mb-4">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>

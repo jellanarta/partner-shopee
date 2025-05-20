@@ -7,6 +7,9 @@ import validasiRegister from "@/utils/validasiRegister";
 import { NextRequest } from "next/server";
 import config from "@/config/config";
 import { cookies } from "next/headers";
+import { z } from "zod";
+import validasiLupaPasswordUser from "@/utils/validasiLupaPasswordUser";
+import { sendToken } from "@/utils/sendToken";
 export async function GET() {
   try {
   } catch (error) {}
@@ -145,7 +148,52 @@ export async function POST(request: NextRequest) {
           headers: { "Content-Type": "application/json" },
         }
       );
-    }else {
+    }else if(data.action==="checkEmail"){
+      const validasienail = await validasiLupaPasswordUser({email:data.email});
+      if(validasienail.error) {
+        return new Response(
+          JSON.stringify(validasienail),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+
+      // cek email ke dtabase
+      const user = await prisma.user.findUnique({
+        where:{
+          email:data.email
+        }
+      })
+      if(!user){
+        return new Response(
+          JSON.stringify({ message: "Email not found", path: "email" }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+
+      // buatkn token
+      const token = jwt.sign({ id: user.id }, config.JWT_SECRET, {
+        expiresIn: "1d",
+  
+      });
+      console.log(token);
+      sendToken(user.email,token);
+      // kirim token ke email
+      return new Response(
+        JSON.stringify({ message: "Please provide a product name keyword." }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    else {
       return new Response(
         JSON.stringify({ message: "Please provide a product name keyword." }),
         {
