@@ -4,6 +4,8 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { UserService } from "@/services/user"
+import {Toaster, toast} from "sonner"
+
 export type typeRegister = {name:string,email:string,password:string,confirmPassword?:string,action?:string}
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -24,7 +26,19 @@ export default function SignupPage() {
     e.preventDefault()
 
     const result:any = await UserService.createUser(formData)
-    if(result.status === 400){
+    if(result.status === 200){
+      // Tampilkan toast sukses dengan sonner
+      toast.success(result.data.message)
+      // Redirect ke login setelah pendaftaran berhasil
+      setTimeout(() => {
+        window.location.href = "/login"
+      }, 1500)
+    }
+
+
+    else if(result.status === 400){
+
+      return toast.error(result.data.message)
       // setError(result.data.response.message)
       // return
       console.log(result.response.data.message)
@@ -95,6 +109,7 @@ export default function SignupPage() {
 
               <div className="mt-5">
                 {/* Form */}
+                <Toaster richColors />
                 <form onSubmit={handleSubmit}>
                   <div className="grid gap-y-4">
                     {/* Error message */}
