@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
       if (!dataPassword.token || !dataPassword.token?.length) {
         return new Response(
           JSON.stringify({
-            message: "Token tidak ditemukan",
+            message: "Token not found",
             path: "password",
           }),
           {
@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
       );
       if (resultVerifikasiToken.error) {
         return new Response(
-          JSON.stringify({ message: "Token tidak valid", path: "password" }),
+          JSON.stringify({ message: "Invalid token", path: "password" }),
           {
             status: 400,
             headers: {
@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
       if (!updateUser) {
         return new Response(
           JSON.stringify({
-            message: "Gagal mengupdate password",
+            message: "Failed to update password",
             path: "password",
           }),
           {
@@ -232,7 +232,7 @@ export async function POST(request: NextRequest) {
       }
 
       return new Response(
-        JSON.stringify({ message: "Password berhasil diupdate" }),
+        JSON.stringify({ message: "Password successfully updated" }),
         {
           status: 200,
           headers: {

@@ -43,11 +43,11 @@ export default function PageResetPassword({searchParams}:{searchParams:string|un
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validasi konfirmasi password
+    // Password confirmation validation
     if (formData.password !== formData.confirmPassword) {
       setError((prev) => ({
         ...prev,
-        confirmPassword: "Password tidak cocok",
+        confirmPassword: "Passwords do not match",
       }));
       return;
     }
@@ -85,7 +85,7 @@ export default function PageResetPassword({searchParams}:{searchParams:string|un
 
       setError((prev) => ({
         ...prev,
-        password: "Terjadi kesalahan, silakan coba lagi",
+        password: "An error occurred, please try again",
       }));
     }
   };
@@ -112,8 +112,8 @@ export default function PageResetPassword({searchParams}:{searchParams:string|un
           {loadingResetPassword.success && (
             <div className="bg-green-50 border mt-5 border-green-200 text-sm text-green-600 rounded-lg p-4 mb-4">
               <p>
-                Password berhasil diubah! Anda akan diarahkan ke halaman login
-                dalam 3 detik...
+                Password successfully changed! You will be redirected to the login page
+                in 3 seconds...
               </p>
             </div>
           )}
@@ -125,7 +125,7 @@ export default function PageResetPassword({searchParams}:{searchParams:string|un
                 {/* Form Group Password */}
                 <div>
                   <label htmlFor="password" className="block text-sm mb-2">
-                    Password baru
+                    New Password
                   </label>
                   <div className="relative">
                     <input
@@ -134,7 +134,7 @@ export default function PageResetPassword({searchParams}:{searchParams:string|un
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      placeholder="Masukkan password baru"
+                      placeholder="Enter new password"
                       className="py-2.5 sm:py-3 px-4 block w-full border-gray-200 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                       required
                     />
@@ -152,7 +152,7 @@ export default function PageResetPassword({searchParams}:{searchParams:string|un
                     htmlFor="confirmPassword"
                     className="block text-sm mb-2"
                   >
-                    Konfirmasi Password
+                    Confirm Password
                   </label>
                   <div className="relative">
                     <input
@@ -161,7 +161,7 @@ export default function PageResetPassword({searchParams}:{searchParams:string|un
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      placeholder="Konfirmasi password baru"
+                      placeholder="Confirm new password"
                       className="py-2.5 sm:py-3 px-4 block w-full border-gray-200 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                       required
                     />
