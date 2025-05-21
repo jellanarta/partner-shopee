@@ -242,16 +242,17 @@ export async function POST(request: NextRequest) {
       );
     } else {
       return new Response(
-        JSON.stringify({ message: "Please provide a product name keyword." }),
+        JSON.stringify({ message: "Action not found" }),
         {
-          status: 500,
+          status: 400,
           headers: { "Content-Type": "application/json" },
         }
       );
     }
   } catch (error: any) {
+    console.log(error);
     return new Response(
-      JSON.stringify({ message: "Please provide a product name keyword." }),
+      JSON.stringify({ message: "Internal server error" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
