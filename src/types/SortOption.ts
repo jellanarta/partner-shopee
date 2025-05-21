@@ -28,8 +28,8 @@ export enum SortOptionBeranda {
 }
 
 export type SortFilterBeranda =
-  | "populer"
-  | "laris"
-  | "stok_terbanyak"
-  | "produk_mall"
-  | "terbaru";
+  | "popular"
+  | "best_selling"
+  | "most_stock"
+  | "mall_product"
+  | "newest";

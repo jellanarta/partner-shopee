@@ -4,7 +4,7 @@ import {
   LabelFilterProduk,
 } from "@/types/LabelFilterProduk";
 import { Product } from "@/types/Product";
-import { SortFilter } from "@/types/SortOption";
+import {  sortOptionData, SortOptionData } from "@/types/SortOption";
 import { sortProducts } from "@/utils/sortProducts";
 import { NextRequest } from "next/server";
 import { cekLogin } from "@/utils/cekLogin";
@@ -13,10 +13,12 @@ export async function GET(req: NextRequest) {
     const params = req.nextUrl.searchParams;
 
     // validasi user login
-    const resultLogin = await cekLogin()
-    if(!resultLogin){
+    const resultLogin = await cekLogin();
+    if (!resultLogin) {
       return new Response(
-        JSON.stringify({ message: "Please login first to search for products" }),
+        JSON.stringify({
+          message: "Please login first to search for products",
+        }),
         {
           status: 401,
           headers: { "Content-Type": "application/json" },
@@ -31,15 +33,17 @@ export async function GET(req: NextRequest) {
     const filterParam: string | null = params.get("filter");
 
     // Validasi filter yang diterima
-    const validFilters: SortFilter[] = [
-      "murah",
-      "mahal",
-      "populer",
-      "laris",
-      "default",
-    ];
-    const filter: SortFilter = validFilters.includes(filterParam as SortFilter)
-      ? (filterParam as SortFilter) // jika valid, gunakan filter tersebut
+    // const validFilters: SortOptionData[] = [
+    //   "murah",
+    //   "mahal",
+    //   "populer",
+    //   "laris",
+    //   "default",
+    // ];
+    const filter: SortOptionData = sortOptionData.includes(
+      filterParam as SortOptionData
+    )
+      ? (filterParam as SortOptionData) // jika valid, gunakan filter tersebut
       : "default"; // jika tidak valid, defaultkan ke "murah"
     let page: number = parseInt(params.get("page") || "1", 10);
     const limit: number = parseInt(params.get("limit") || "12", 10);
@@ -90,18 +94,15 @@ export async function GET(req: NextRequest) {
     } else if (queryCategorie) {
       const category = queryCategorie as LabelFilterProduk;
       if (category === "Popular") {
-        dataproducts.products = sortProducts(dataDummyProducts, "populer");
+        dataproducts.products = sortProducts(dataDummyProducts, "popular");
       } else if (category === "Newest") {
-        dataproducts.products = sortProducts(dataDummyProducts, "terbaru");
+        dataproducts.products = sortProducts(dataDummyProducts, "newest");
       } else if (category === "Best Selling") {
-        dataproducts.products = sortProducts(dataDummyProducts, "laris");
+        dataproducts.products = sortProducts(dataDummyProducts, "best_selling");
       } else if (category === "Most Stock") {
-        dataproducts.products = sortProducts(
-          dataDummyProducts,
-          "stok_terbanyak"
-        );
+        dataproducts.products = sortProducts(dataDummyProducts, "most_stock");
       } else if (category === "Mall Products") {
-        dataproducts.products = sortProducts(dataDummyProducts, "produk_mall");
+        dataproducts.products = sortProducts(dataDummyProducts, "mall_product");
       } else {
         dataproducts.products = [];
       }
@@ -163,13 +164,11 @@ export async function GET(req: NextRequest) {
       totalPages,
       currentPage: page,
     };
-    // console.log(returnData)
     return new Response(JSON.stringify(returnData), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Server error:", error);
     return new Response(
       JSON.stringify({ message: "An error occurred while fetching products." }),
       {
