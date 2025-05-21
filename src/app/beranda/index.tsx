@@ -388,7 +388,7 @@ export default function Beranda({login}:{login:boolean}) {
                   </div>
                 </div>
               </div>
-              <Pricing />
+              {/* <Pricing /> */}
               <Footer />
             </div>
             {/* End Hero */}
