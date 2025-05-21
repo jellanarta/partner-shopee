@@ -41,9 +41,7 @@ export default function SignupPage() {
       return toast.error(result.data.message)
       // setError(result.data.response.message)
       // return
-      console.log(result.response.data.message)
     }
-    console.log(result)
     // setIsLoading(true)
     // setError("")
 
