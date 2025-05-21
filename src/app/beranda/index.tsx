@@ -24,7 +24,7 @@ export interface ResultProductState {
   data: ProductPaginationResult;
 }
 
-export default function Beranda() {
+export default function Beranda({login}:{login:boolean}) {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [messageError, setMessageError] = useState("");
   const [keyName, setKeyName] = useState("");
@@ -41,9 +41,18 @@ export default function Beranda() {
     const value = e.target.value;
     setKeyName(value);
   };
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(login);
   const submitSearchProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if(!login){
+      setIsLogin(false)
+      setShowAlert(true);
+        setMessageError(
+          "Please login first to search for products"
+        );
+        setTimeout(() => setShowAlert(false), 5000);
+      return
+    }
     setResultProduct((prev) => ({
       ...prev,
       loading: true,
@@ -215,6 +224,7 @@ export default function Beranda() {
                           <input
                             type="text"
                             onChange={changeKeyName}
+                            autoComplete="off"
                             value={keyName}
                             name="hs-search-article-1"
                             id="hs-search-article-1"

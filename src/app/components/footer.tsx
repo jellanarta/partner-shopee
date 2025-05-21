@@ -8,12 +8,12 @@ export default function Footer() {
               <a
                 className="flex-none font-semibold text-xl text-black focus:outline-hidden focus:opacity-80"
                 href="#"
-                aria-label="Brand"
+                aria-label="Partner"
               >
-                Brand
+                Partner
               </a>
               <p className="mt-3 text-xs sm:text-sm text-gray-600">
-                © 2025 Preline Labs.
+                © 2025 Partner.
               </p>
             </div>
             {/* End Col */}
@@ -470,12 +470,12 @@ export default function Footer() {
                   <a
                     className="flex-none font-semibold text-xl text-black focus:outline-hidden focus:opacity-80"
                     href="#"
-                    aria-label="Brand"
+                    aria-label="Partner"
                   >
-                    Brand
+                    Partner
                   </a>
                   <p className="mt-1 text-xs sm:text-sm text-gray-600">
-                    © 2025 Preline Labs.
+                    © 2025 Partner.
                   </p>
                 </div>
 

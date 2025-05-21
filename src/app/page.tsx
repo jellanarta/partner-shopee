@@ -1,9 +1,11 @@
+import { cekLogin } from "@/utils/cekLogin";
 import Beranda from "./beranda";
 
-export default function Page() {
+export default async function Page() {
+  const result:boolean = await cekLogin()
   return (
     <>
-    <Beranda/>
+    <Beranda login={result} />
     </>
   );
 }
