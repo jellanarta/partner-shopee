@@ -5,10 +5,12 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {Toaster, toast} from "sonner"
 
 export type typeLogin = { email: string; password: string; action?: string };
 
 export default function Login() {
+
   const router = useRouter();
   const [formData, setFormData] = useState<typeLogin>({
     email: "",
@@ -29,8 +31,10 @@ export default function Login() {
     if (response.status === 200) {
       console.log("Login successful");
       router.push("/");
+      return toast.success("Login Berhasil");
+      
     } else {
-      console.log("Login failed");
+      return toast.error("Login Gagal");
     }
     console.log(response);
   };
@@ -55,15 +59,16 @@ export default function Login() {
           </p>
         </div>
 
-        <div className="bg-green-50 border mt-5 border-green-200 text-sm text-green-600 rounded-lg p-4 mb-4">
+        {/* <div className="bg-green-50 border mt-5 border-green-200 text-sm text-green-600 rounded-lg p-4 mb-4">
           <p>
             Password berhasil diubah! Anda akan diarahkan ke halaman login dalam
             3 detik...
           </p>
-        </div>
+        </div> */}
 
         <div className="mt-5">
           {/* Form */}
+          <Toaster richColors  />
           <form onSubmit={handleSubmit}>
             <div className="grid gap-y-4">
               {/* Form Group */}
