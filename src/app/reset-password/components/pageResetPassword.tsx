@@ -71,7 +71,7 @@ export default function PageResetPassword() {
     } else if (result.status === 400) {
       setError((prev) => ({
         ...prev,
-        password: result.data.message,
+        password: result.response.data.message,
       }));
       setLoadingResetPassword((prev) => ({
         ...prev,

@@ -1,10 +1,14 @@
 export enum SortOption {
   Default = "default",
-  Murah = "murah",
-  Mahal = "mahal",
-  Populer = "populer",
-  Laris = "laris",
+  Murah = "cheap",
+  Mahal = "expensive",
+  Populer = "popular", 
+  Laris = "best_selling",
 }
+
+export const sortOptionData = ['default','cheap','expensive','popular','best selling']
+export type SortOptionData = 'default' | 'cheap' | 'expensive' | 'popular' | 'best selling';
+
 export type SortFilter =
   | "murah"
   | "mahal"

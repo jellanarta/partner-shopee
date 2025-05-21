@@ -1,14 +1,14 @@
 export const daftarLabelFilter = [
-  "Terbaru",
-  "Populer",
-  "Terlaris",
-//   "Harga Terendah",
-//   "Harga Tertinggi",
-//   "Rating Tertinggi",
-  "Produk Mall",
-//   "Produk Original",
-  "Stok Terbanyak",
-//   "Pertumbuhan Tertinggi",
+  "Newest",
+  "Popular",
+  "Best Selling",
+//   "Lowest Price",
+//   "Highest Price",
+//   "Top Rated",
+  "Mall Products",
+//   "Original Products",
+  "Most Stock",
+//   "Highest Growth",
 ] as const;
 
 export type LabelFilterProduk = (typeof daftarLabelFilter)[number];

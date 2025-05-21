@@ -206,8 +206,9 @@ export default function Beranda({login}:{login:boolean}) {
                   </h1>
 
                   <p className="mt-3 text-gray-600">
-                    Jelajahi produk populer di Shopee dan temukan yang sesuai
-                    dengan kebutuhanmu.
+                    {/* Jelajahi produk populer di Shopee dan temukan yang sesuai
+                    dengan kebutuhanmu. */}
+                    Explore popular products on Shopee and find the ones that suit your needs.
                   </p>
 
                   <div className="mt-7 sm:mt-12 mx-auto max-w-xl relative">
@@ -219,7 +220,7 @@ export default function Beranda({login}:{login:boolean}) {
                             htmlFor="hs-search-article-1"
                             className="block text-sm text-gray-700 font-medium"
                           >
-                            <span className="sr-only">Search article</span>
+                            <span className="sr-only">Search products</span>
                           </label>
                           <input
                             type="text"
@@ -229,7 +230,7 @@ export default function Beranda({login}:{login:boolean}) {
                             name="hs-search-article-1"
                             id="hs-search-article-1"
                             className="py-2.5 px-4 block w-full border-transparent rounded-lg focus:border-blue-500 focus:ring-blue-500"
-                            placeholder="Cari produk..."
+                            placeholder="Search for products..."
                           />
                         </div>
                         <div>

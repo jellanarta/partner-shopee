@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { UserService } from '@/services/user';
-import Head from 'next/head';
-import Link from 'next/link';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { UserService } from "@/services/user";
+import Head from "next/head";
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export type typeLogin = {email:string,password:string,action?:string}
+export type typeLogin = { email: string; password: string; action?: string };
 
 export default function Login() {
   const router = useRouter();
@@ -23,7 +23,9 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(formData);
-    const response = await UserService.loginUser(formData) as { status: number };
+    const response = (await UserService.loginUser(formData)) as {
+      status: number;
+    };
     if (response.status === 200) {
       console.log("Login successful");
       router.push("/");
@@ -50,6 +52,13 @@ export default function Login() {
             >
               Sign up here
             </a>
+          </p>
+        </div>
+
+        <div className="bg-green-50 border mt-5 border-green-200 text-sm text-green-600 rounded-lg p-4 mb-4">
+          <p>
+            Password berhasil diubah! Anda akan diarahkan ke halaman login dalam
+            3 detik...
           </p>
         </div>
 
@@ -175,5 +184,5 @@ export default function Login() {
 }
 
 function push(arg0: string) {
-  throw new Error('Function not implemented.');
+  throw new Error("Function not implemented.");
 }

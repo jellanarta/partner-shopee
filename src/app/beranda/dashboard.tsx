@@ -11,17 +11,17 @@ import {
 } from "@/utils/generateDashboardSummary";
 import { getProduct } from "@/services/product";
 import { MoonLoader } from "react-spinners";
-import { SortOption } from "@/types/SortOption";
+import {  SortOptionData, sortOptionData } from "@/types/SortOption";
 import TableProductDetails from "./tableProductDetails";
 
 export default function Dashboard({
   resultProduct,
   children,
-  showFilter
+  showFilter,
 }: {
   children: React.ReactNode;
   resultProduct: ResultProductState;
-  showFilter:boolean
+  showFilter: boolean;
 }) {
   const [dataProduct, setDataProduct] =
     useState<ResultProductState>(resultProduct);
@@ -43,7 +43,7 @@ export default function Dashboard({
     },
     {
       id: "total-penjualan", // id unik
-      title: "Total Penjualan",
+      title: "Total Sales",
       value: "0",
       icon: <ShoppingCart className="h-5 w-5 text-purple-500" />,
       bgColor: "bg-purple-50",
@@ -51,7 +51,7 @@ export default function Dashboard({
     },
     {
       id: "total-pendapatan", // id unik
-      title: "Total Pendapatan",
+      title: "Total Revenue",
       value: "Rp 0",
       icon: <DollarSign className="h-5 w-5 text-yellow-500" />,
       bgColor: "bg-yellow-50",
@@ -59,7 +59,7 @@ export default function Dashboard({
     },
     {
       id: "rata-rata-omset", // id unik
-      title: "Rata-rata Omset/Bulan",
+      title: "Average Monthly Revenue",
       value: "Rp 0",
       icon: <DollarSign className="h-5 w-5 text-red-500" />,
       bgColor: "bg-red-50",
@@ -67,7 +67,7 @@ export default function Dashboard({
     },
     {
       id: "pendapatan-30-hari", // id unik
-      title: "Pendapatan 30 hari",
+      title: "30 Days Revenue",
       value: "Rp 0",
       icon: <DollarSign className="h-5 w-5 text-green-500" />,
       bgColor: "bg-green-50",
@@ -75,7 +75,7 @@ export default function Dashboard({
     },
     {
       id: "tren", // id unik
-      title: "Tren",
+      title: "Trend",
       value: "0%",
       icon: <Heart className="h-5 w-5 text-red-400" />,
       trend: "up",
@@ -154,38 +154,50 @@ export default function Dashboard({
   };
 
   // handle filter products
-  const [checkedFilter, setCheckedFilter] = useState({
+  type FilterState = {
+    default: boolean;
+    cheap: boolean;
+    expensive: boolean;
+    popular: boolean;
+    ["best selling"]: boolean;
+  };
+
+  const [checkedFilter, setCheckedFilter] = useState<FilterState>({
     default: true,
-    murah: false,
-    mahal: false,
-    populer: false,
-    laris: false,
+    cheap: false,
+    expensive: false,
+    popular: false,
+    ["best selling"]: false,
   });
 
-  const [searchFilter, setSearchFilter] = useState(false);
-  const changeCheckedFilter = (keyName: SortOption) => {
-    setCheckedFilter((prev) => {
-      const isAlreadyChecked = prev[keyName];
-      if (isAlreadyChecked) {
-        // Jika filter yang diklik sudah aktif → reset ke default
-        return {
-          default: true,
-          murah: false,
-          mahal: false,
-          populer: false,
-          laris: false,
-        };
-      }
+  const checkIncheckedFilter = (data: string): boolean|undefined => {
+    const datakey = data as SortOptionData
+    return checkedFilter[datakey]
+  };
 
-      // Jika filter yang diklik belum aktif → aktifkan dia, lainnya false
+  const [searchFilter, setSearchFilter] = useState(false);
+  const changeCheckedFilter = (keyName: string) => {
+    const keyname = keyName as SortOptionData
+
+    setCheckedFilter((prev)=>{
+      const isAlreadyChecked = prev[keyname]
+      if(isAlreadyChecked){
+        return {
+          default:true,
+          cheap:false,
+          expensive:false,
+          popular:false,
+          "best selling":false
+        }
+      }
       return {
-        default: keyName === "default",
-        murah: keyName === "murah",
-        mahal: keyName === "mahal",
-        populer: keyName === "populer",
-        laris: keyName === "laris",
-      };
-    });
+        default : keyname === "default",
+        cheap : keyname === "cheap",
+        expensive : keyname === "expensive",
+        popular : keyname === "popular",
+        "best selling" : keyname === "best selling",
+      }
+    })
     setSearchFilter(true);
     if (urlFilterData) {
       setUrlFilterData(urlFilterData.replace(/page=\d+/, `page=1`));
@@ -262,7 +274,7 @@ export default function Dashboard({
           <>
             <div className="mt-10">
               <div className="flex flex-wrap justify-center sm:justify-start  gap-2">
-                {Object.values(SortOption).map((data: SortOption, index) => (
+                {sortOptionData.map((data: string, index) => (
                   <label
                     key={index}
                     htmlFor={`hs-checkbox-in-form-${index + data}`}
@@ -270,7 +282,7 @@ export default function Dashboard({
                   >
                     <input
                       type="checkbox"
-                      checked={checkedFilter[data]}
+                      checked={checkIncheckedFilter(data) ? true : false}
                       onChange={() => changeCheckedFilter(data)}
                       className="shrink-0 mt-0.5 border-gray-200 rounded-sm text-blue-600 focus:ring-blue-500 checked:border-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                       id={`hs-checkbox-in-form-${index + data}`}

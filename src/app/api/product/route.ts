@@ -89,18 +89,18 @@ export async function GET(req: NextRequest) {
       );
     } else if (queryCategorie) {
       const category = queryCategorie as LabelFilterProduk;
-      if (category === "Populer") {
+      if (category === "Popular") {
         dataproducts.products = sortProducts(dataDummyProducts, "populer");
-      } else if (category === "Terbaru") {
+      } else if (category === "Newest") {
         dataproducts.products = sortProducts(dataDummyProducts, "terbaru");
-      } else if (category === "Terlaris") {
+      } else if (category === "Best Selling") {
         dataproducts.products = sortProducts(dataDummyProducts, "laris");
-      } else if (category === "Stok Terbanyak") {
+      } else if (category === "Most Stock") {
         dataproducts.products = sortProducts(
           dataDummyProducts,
           "stok_terbanyak"
         );
-      } else if (category === "Produk Mall") {
+      } else if (category === "Mall Products") {
         dataproducts.products = sortProducts(dataDummyProducts, "produk_mall");
       } else {
         dataproducts.products = [];
