@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { UserService } from "@/services/user";
 import {  PulseLoader } from "react-spinners";
 export type ResetPassword = {
@@ -10,9 +10,7 @@ export type ResetPassword = {
   confirmPassword: string;
   token?: string | null;
 };
-export default function PageResetPassword() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+export default function PageResetPassword({searchParams}:{searchParams:string|undefined}) {
 
   const [formData, setFormData] = useState<ResetPassword>({
     password: "",
@@ -54,7 +52,7 @@ export default function PageResetPassword() {
       return;
     }
 
-    formData.token = token;
+    formData.token = searchParams;
 
     setLoadingResetPassword({
       loading: true,

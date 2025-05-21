@@ -40,7 +40,7 @@ export const cekLogin = async () => {
         }
       }
     }
-  } catch (error) {
+  } catch {
     return false;
   }
 };

@@ -3,13 +3,9 @@
 import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { registerUser } from "@/utils/user/auth"
-import { User } from "@/generated/prisma"
 import { UserService } from "@/services/user"
 export type typeRegister = {name:string,email:string,password:string,confirmPassword?:string,action?:string}
 export default function SignupPage() {
-  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [formData, setFormData] = useState<typeRegister>({

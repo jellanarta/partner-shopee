@@ -6,11 +6,12 @@ export async function verifikasiToken(token: string) {
     error: false,
     data: {},
   };
+
   try {
     const result = jwt.verify(token, config.JWT_SECRET); // tanpa callback
     response.data = result;
     return response;
-  } catch (error) {
+  } catch {
     response.error = true;
     return response;
   }

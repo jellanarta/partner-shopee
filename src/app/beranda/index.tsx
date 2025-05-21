@@ -58,15 +58,15 @@ export default function Beranda({login}:{login:boolean}) {
       loading: true,
     }));
     try {
-      const resultApi = await getProduct(keyName, null);
+      const resultApi:any = await getProduct(keyName, null);
 
-      if (resultApi.status === 200) {
+      if (resultApi?.status && resultApi.status === 200) {
         setResultProduct((prev) => ({
           ...prev,
           loading: false,
           data: resultApi.data,
         }));
-      } else if (resultApi.status === 400) {
+      } else if (resultApi?.status && resultApi.status === 400) {
         setResultProduct((prev) => ({
           ...prev,
           loading: false,
@@ -120,23 +120,21 @@ export default function Beranda({login}:{login:boolean}) {
   // handle click rekomendasi
   const [loadingSeacrhCategories, setLoadingSeacrhCategories] = useState(false);
   const [textCategories, setTextCategories] = useState("");
-  const [showFilter, setShowFilter] = useState(true);
   const clickCategories = async (dataFilter: LabelFilterProduk) => {
     if (!loadingSeacrhCategories) {
       setLoadingSeacrhCategories(true);
       setTextCategories(dataFilter);
-      const resultApi = await getProduct(
+      const resultApi:any = await getProduct(
         "",
         "/api/product?category=" + dataFilter
       );
-      if (resultApi.status === 200) {
+      if (resultApi?.status && resultApi.status === 200) {
         setResultProduct((prev) => ({
           ...prev,
           loading: false,
           data: resultApi.data,
         }));
-        setShowFilter(false);
-      } else if (resultApi.status === 400) {
+      } else if (resultApi?.status && resultApi.status === 400) {
         setResultProduct((prev) => ({
           ...prev,
           loading: false,
@@ -155,7 +153,7 @@ export default function Beranda({login}:{login:boolean}) {
       <div>
         {resultProduct.data.products.length ? (
           <div>
-            <Dashboard resultProduct={resultProduct} showFilter={showFilter}>
+            <Dashboard resultProduct={resultProduct}>
               <div className="flex justify-between sticky top-0 p-5 shadow-md bg-white z-[10000]  w-full  gap-2 items-center mb-5">
                 <div
                   onClick={handleBackSearch}

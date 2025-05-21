@@ -1,4 +1,8 @@
 "use client"
+
+import Image from "next/image";
+import Link from "next/link";
+
 export default function SideBar({children}:{children:React.ReactNode}) {
   return (
     <div>
@@ -41,13 +45,13 @@ bg-white border-e border-gray-200"
         <div className="relative flex flex-col h-full max-h-full ">
           {/* Header */}
           <header className="p-4 flex justify-between items-center gap-x-2">
-            <a
+            <Link
               className="flex-none font-semibold text-xl text-black focus:outline-hidden focus:opacity-80"
               href="#"
               aria-label="Brand"
             >
               Brand
-            </a>
+            </Link>
 
             <div className="lg:hidden -me-2">
               {/* Close Button */}
@@ -90,7 +94,7 @@ bg-white border-e border-gray-200"
                 aria-expanded="false"
                 aria-label="Dropdown"
               >
-                <img
+                <Image
                   className="shrink-0 size-5 rounded-full"
                   src="https://images.unsplash.com/photo-1734122415415-88cb1d7d5dc0?q=80&w=320&h=320&auto=format&fit=facearea&facepad=3&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   alt="Avatar"

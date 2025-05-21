@@ -17,11 +17,9 @@ import TableProductDetails from "./tableProductDetails";
 export default function Dashboard({
   resultProduct,
   children,
-  showFilter,
 }: {
   children: React.ReactNode;
   resultProduct: ResultProductState;
-  showFilter: boolean;
 }) {
   const [dataProduct, setDataProduct] =
     useState<ResultProductState>(resultProduct);
@@ -31,6 +29,7 @@ export default function Dashboard({
     if (resultProduct.data.next) {
       setUrlFilterData(resultProduct.data.next.replace(/page=\d+/, `page=1`));
     }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [dashboardData, setDashboardData] = useState([
     {
@@ -116,8 +115,8 @@ export default function Dashboard({
           ...prev,
           loading: true,
         }));
-        const result = await getProduct("", dataProduct.data.next);
-        if (result.status === 200) {
+        const result:any = await getProduct("", dataProduct.data.next);
+        if (result?.status && result.status === 200) {
           const data = result.data;
           setDataProduct((prev) => ({
             loading: false,
@@ -216,8 +215,8 @@ export default function Dashboard({
             filterdata += `filter=${key}`;
           }
         });
-        const result = await getProduct("", urlFilterData + "&" + filterdata);
-        if (result.status === 200) {
+        const result:any = await getProduct("", urlFilterData + "&" + filterdata);
+        if (result?.status && result.status === 200) {
           // Handle product data here
           setDataProduct((prev) => ({
             ...prev,
@@ -233,7 +232,8 @@ export default function Dashboard({
       }
     };
     getWithFilter();
-  }, [checkedFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkedFilter, searchFilter]);
   // handle detail product
   const [openDetailProducts, setOpenDetailProducts] = useState(false);
   const handleDetailsProducts = (isOpen: boolean) => {
