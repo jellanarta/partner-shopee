@@ -121,6 +121,15 @@ export default function Beranda({login}:{login:boolean}) {
   const [loadingSeacrhCategories, setLoadingSeacrhCategories] = useState(false);
   const [textCategories, setTextCategories] = useState("");
   const clickCategories = async (dataFilter: LabelFilterProduk) => {
+    if(!login){
+      setIsLogin(false)
+      setShowAlert(true);
+        setMessageError(
+          "Please login first to search for products"
+        );
+        setTimeout(() => setShowAlert(false), 5000);
+      return
+    }
     if (!loadingSeacrhCategories) {
       setLoadingSeacrhCategories(true);
       setTextCategories(dataFilter);
