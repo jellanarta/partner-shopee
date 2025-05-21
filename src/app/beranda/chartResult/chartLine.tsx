@@ -114,6 +114,7 @@ export default function ChartLine({
         series: [dataseries],
       }));
     }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products]);
   return (
     <div className="overflow-hidden">

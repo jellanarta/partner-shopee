@@ -2,6 +2,7 @@ import { Product } from "@/types/Product"
 import { formatCurrency } from "@/utils/formatCurrency"
 import { formatNumber } from "@/utils/formatNumber"
 import { Star, TrendingUp, ShoppingBag, MapPin, CheckCircle, AlertCircle } from "lucide-react"
+import Image from "next/image"
 
 interface ProductCardProps {
   product: Product
@@ -16,8 +17,10 @@ export function ProductCard({ product }: ProductCardProps) {
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       {/* Product Image */}
       <div className="relative h-48 overflow-hidden">
-        <img
-          src={product.image || "/placeholder.svg"}
+        <Image
+          src={"/products.webp"}
+          width={300}
+          height={300}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
         />
